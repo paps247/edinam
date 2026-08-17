@@ -1739,8 +1739,10 @@ body.dark .theme-toggle{
 .result-card strong{
 
     font-size:28px;
+    font-size:24px;
 
     color:#222;
+    word-break: break-all;
 
 }
 

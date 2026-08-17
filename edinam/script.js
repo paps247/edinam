@@ -501,17 +501,7 @@ const selectedProjectTitle = document.getElementById(
     "selectedProjectTitle"
 );
 
-const dimensionFields = document.getElementById("dimensionFields");
-const blockManufacturingFields = document.getElementById(
-    "blockManufacturingFields"
-);
-const blockSizeField = document.getElementById("blockSizeField");
 
-const dimensionOneLabel = document.getElementById("dimensionOneLabel");
-const dimensionTwoLabel = document.getElementById("dimensionTwoLabel");
-const dimensionThreeLabel = document.getElementById(
-    "dimensionThreeLabel"
-);
 
 const dimensionOne = document.getElementById("dimensionOne");
 const dimensionTwo = document.getElementById("dimensionTwo");
@@ -555,7 +545,7 @@ const projectSettings = {
             "Example: 0.6",
             "Example: 0.25"
         ],
-        ratio: "1 : 2 : 0",
+        ratio: "1 : 3 : 5",
         description: "Cement : Sand : Aggregate",
         type: "concrete"
     },
@@ -623,15 +613,15 @@ const projectSettings = {
             "Example: 3",
             "Example: 0.15"
         ],
-        ratio: "1 : 3 : 5",
+        ratio: "1 : 3 : 6",
         description: "Cement : Sand : Aggregate",
         type: "mortar"
     },
 
     blockManufacturing: { // This key is now used by the first button
         title: "Block Manufacturing",
-        ratio: "1 : 3 : 5",
-        description: "Cement : Sand : Aggregate",
+        ratio: "1 : 10",
+        description: "Cement : Sand",
         type: "manufacturing"
     },
 
@@ -676,16 +666,9 @@ function activateEstimatorStep(stepNumber) {
 
 function clearEstimatorInputs() {
 
-    dimensionOne.value = "";
-    dimensionTwo.value = "";
-    dimensionThree.value = "";
-
-    const numberOfBlocks = document.getElementById(
-        "numberOfBlocks"
-    );
-
-    if (numberOfBlocks) {
-        numberOfBlocks.value = "";
+    const numberOfBatches = document.getElementById("numberOfBatches");
+    if (numberOfBatches) {
+        numberOfBatches.value = "";
     }
 
 }
@@ -717,40 +700,6 @@ function showSelectedProject(projectName) {
     projectSelection.style.display = "none";
     projectDetails.style.display = "block";
     resultsSection.style.display = "none";
-
-    blockManufacturingFields.style.display = "none";
-    blockSizeField.style.display = "none";
-    dimensionFields.style.display = "grid";
-
-    if (settings.type === "manufacturing") {
-
-        dimensionFields.style.display = "none";
-
-        blockManufacturingFields.style.display = "grid";
-
-        aggregateRatioBox.style.display = "none";
-
-    } else {
-
-        dimensionOneLabel.textContent = settings.labels[0];
-        dimensionTwoLabel.textContent = settings.labels[1];
-        dimensionThreeLabel.textContent = settings.labels[2];
-
-        dimensionOne.placeholder = settings.placeholders[0];
-        dimensionTwo.placeholder = settings.placeholders[1];
-        dimensionThree.placeholder = settings.placeholders[2];
-
-        if (projectName === "blockLaying") {
-            blockSizeField.style.display = "block";
-        }
-
-        if (settings.type === "concrete") {
-            aggregateRatioBox.style.display = "block";
-        } else {
-            aggregateRatioBox.style.display = "none";
-        }
-
-    }
 
     projectCards.forEach(card => {
 
@@ -810,88 +759,6 @@ changeProjectButton.addEventListener("click", function () {
 const smartCalculateButton =
     document.getElementById("smartCalculateButton");
 
-const mixMethod =
-    document.getElementById("mixMethod");
-
-const recommendedMix =
-    document.getElementById("recommendedMix");
-
-const standardMixBox =
-    document.getElementById("standardMixBox");
-
-const standardMix =
-    document.getElementById("standardMix");
-
-const customMix =
-    document.getElementById("customMix");
-
-
-function updateMixOptions() {
-
-    if (!mixMethod) {
-        console.error("mixMethod was not found.");
-        return;
-    }
-
-    if (recommendedMix) {
-        recommendedMix.style.display = "none";
-    }
-
-    if (standardMixBox) {
-        standardMixBox.style.display = "none";
-    }
-
-    if (customMix) {
-        customMix.style.display = "none";
-    }
-
-    switch (mixMethod.value) {
-
-        case "recommended":
-
-            if (recommendedMix) {
-                recommendedMix.style.display = "block";
-            }
-
-            break;
-
-
-        case "standard":
-
-            if (standardMixBox) {
-                standardMixBox.style.display = "block";
-            }
-
-            break;
-
-
-        case "custom":
-
-            if (customMix) {
-                customMix.style.display = "block";
-            }
-
-            break;
-
-    }
-
-}
-
-
-if (mixMethod) {
-
-    mixMethod.addEventListener("change", function () {
-
-        updateMixOptions();
-
-        activateEstimatorStep(3);
-
-    });
-
-    updateMixOptions();
-
-}
-
 /* ======================================
    SMART ESTIMATOR CALCULATION
    PART 1 – READ USER INPUTS
@@ -912,18 +779,11 @@ function calculateMaterials() {
 
         }
 
-        let value1 = Number(dimensionOne.value);
-        let value2 = Number(dimensionTwo.value);
-        let value3 = Number(dimensionThree.value);
-
-        let numberOfBlocks =
-            Number(document.getElementById("numberOfBlocks")?.value);
+        let numberOfBatches =
+            Number(document.getElementById("numberOfBatches")?.value);
 
         console.log("Selected Project:", selectedProject);
-        console.log("Dimension 1:", value1);
-        console.log("Dimension 2:", value2);
-        console.log("Dimension 3:", value3);
-        console.log("Blocks:", numberOfBlocks);
+        console.log("Batches:", numberOfBatches);
 
         /* ======================================
    CALCULATE MAIN PROJECT MEASUREMENT
@@ -931,82 +791,14 @@ function calculateMaterials() {
 
 let mainMeasurement = 0;
 let measurementLabel = "";
-
-if (
-    selectedProject === "highStrengthConcrete" ||
-    selectedProject === "slab" ||
-    selectedProject === "column" ||
-    selectedProject === "beam"
-) {
-
-    if (
-        value1 <= 0 ||
-        value2 <= 0 ||
-        value3 <= 0
-    ) {
-
-        alert("Please enter valid measurements.");
-
-        return;
-
-    }
-
-    mainMeasurement =
-        value1 *
-        value2 *
-        value3;
-
-    measurementLabel = "Concrete Volume";
-
+if (!numberOfBatches || numberOfBatches <= 0) {
+    alert("Please enter a valid number of batches.");
+    return;
 }
 
+mainMeasurement = numberOfBatches;
+measurementLabel = "Number of Batches";
 
-else if (
-    selectedProject === "standardStrengthConcrete" ||
-    selectedProject === "lowStrengthConcrete"
-) {
-
-    if (
-        value1 <= 0 ||
-        value2 <= 0 ||
-        value3 <= 0
-    ) {
-
-        alert("Please enter valid measurements.");
-
-        return;
-
-    }
-
-    mainMeasurement =
-        value1 *
-        value2;
-
-    measurementLabel = "Wall Area";
-
-}
-
-
-else if (
-    selectedProject === "blockManufacturing"
-) {
-
-    if (
-        !numberOfBlocks ||
-        numberOfBlocks <= 0
-    ) {
-
-        alert("Please enter the number of blocks required.");
-
-        return;
-
-    }
-
-    mainMeasurement = numberOfBlocks;
-
-    measurementLabel = "Number of Blocks";
-
-}
 
 
 /* ======================================
@@ -1020,89 +812,19 @@ let aggregateRatio = 4;
 const projectType =
     projectSettings[selectedProject].type;
 
-if (mixMethod.value === "recommended") {
+const recommendedRatio =
+    projectSettings[selectedProject].ratio
+        .replaceAll(" ", "")
+        .split(":")
+        .map(Number);
 
-    const recommendedRatio =
-        projectSettings[selectedProject].ratio
-            .replaceAll(" ", "")
-            .split(":")
-            .map(Number);
+cementRatio = recommendedRatio[0];
+sandRatio = recommendedRatio[1];
 
-    cementRatio = recommendedRatio[0];
-    sandRatio = recommendedRatio[1];
-
-    if (recommendedRatio.length === 3) {
-        aggregateRatio = recommendedRatio[2];
-    } else {
-        aggregateRatio = 0;
-    }
-
-}
-
-
-else if (mixMethod.value === "standard") {
-
-    if (!standardMix.value) {
-
-        alert("Please select a standard mix ratio.");
-
-        return;
-
-    }
-
-    const selectedStandardRatio =
-        standardMix.value
-            .split(":")
-            .map(Number);
-
-    cementRatio = selectedStandardRatio[0];
-    sandRatio = selectedStandardRatio[1];
-
-    if (selectedStandardRatio.length === 3) {
-        aggregateRatio = selectedStandardRatio[2];
-    } else {
-        aggregateRatio = 0;
-    }
-
-}
-
-
-else if (mixMethod.value === "custom") {
-
-    cementRatio =
-        Number(document.getElementById("cementRatio").value);
-
-    sandRatio =
-        Number(document.getElementById("sandRatio").value);
-
-    if (projectType === "concrete") {
-
-        aggregateRatio =
-            Number(
-                document.getElementById("aggregateRatio").value
-            );
-
-    } else {
-
-        aggregateRatio = 0;
-
-    }
-
-    if (
-        cementRatio <= 0 ||
-        sandRatio <= 0 ||
-        (
-            projectType === "concrete" &&
-            aggregateRatio <= 0
-        )
-    ) {
-
-        alert("Please enter a valid custom mix ratio.");
-
-        return;
-
-    }
-
+if (recommendedRatio.length === 3) {
+    aggregateRatio = recommendedRatio[2];
+} else {
+    aggregateRatio = 0;
 }
 
 
@@ -1119,245 +841,53 @@ if (aggregateRatio > 0) {
    CALCULATE MATERIAL QUANTITIES
 ====================================== */
 
-let wetVolume = 0;
-let dryVolume = 0;
-
 let cementBags = 0;
 let sandVolume = 0;
 let aggregateVolume = 0;
 let estimatedBlocks = 0;
 
-const dryVolumeFactor = 1.54;
 const cementDensity = 1440;
 const cementBagWeight = 50;
 
+// All projects are now calculated based on the number of batches (bags of cement)
+cementBags = mainMeasurement;
 
-/* CONCRETE PROJECTS */
+// Calculate the volume of cement from the number of bags
+const cementVolume = (cementBags * cementBagWeight) / cementDensity;
 
-if (projectType === "concrete") {
+// The ratio parts are volumetric.
+// materialVolume = cementVolume * (materialRatio / cementRatio)
+sandVolume = cementVolume * (sandRatio / cementRatio);
 
-    wetVolume = mainMeasurement;
-
-    dryVolume =
-        wetVolume *
-        dryVolumeFactor;
-
-    const totalRatio =
-        cementRatio +
-        sandRatio +
-        aggregateRatio;
-
-    const cementVolume =
-        dryVolume *
-        (cementRatio / totalRatio);
-
-    sandVolume =
-        dryVolume *
-        (sandRatio / totalRatio);
-
-    aggregateVolume =
-        dryVolume *
-        (aggregateRatio / totalRatio);
-
-    const cementWeight =
-        cementVolume *
-        cementDensity;
-
-    cementBags =
-        Math.ceil(
-            cementWeight /
-            cementBagWeight
-        );
-
+if (aggregateRatio > 0) {
+    aggregateVolume = cementVolume * (aggregateRatio / cementRatio);
+} else {
+    aggregateVolume = 0;
 }
 
-
-/* BLOCK LAYING */
-
-else if (selectedProject === "standardStrengthConcrete") {
-
-    const wallLength = value1;
-    const wallHeight = value2;
-
-    const wallArea =
-        wallLength *
-        wallHeight;
-
-    const selectedBlockSize =
-        Number(
-            document.getElementById("blockSize").value
-        );
-
-    let blocksPerSquareMetre = 10;
-
-    if (selectedBlockSize === 4) {
-        blocksPerSquareMetre = 11;
-    }
-
-    if (selectedBlockSize === 5) {
-        blocksPerSquareMetre = 10.5;
-    }
-
-    if (selectedBlockSize === 6) {
-        blocksPerSquareMetre = 10;
-    }
-
-    estimatedBlocks =
-        Math.ceil(
-            wallArea *
-            blocksPerSquareMetre *
-            1.05
-        );
-
-    wetVolume =
-        wallLength *
-        wallHeight *
-        value3 *
-        0.10;
-
-    dryVolume =
-        wetVolume *
-        dryVolumeFactor;
-
-    const totalRatio =
-        cementRatio +
-        sandRatio +
-        aggregateRatio;
-
-    const cementVolume =
-        dryVolume *
-        (cementRatio / totalRatio);
-
-    sandVolume =
-        dryVolume *
-        (sandRatio / totalRatio);
-
-    cementBags =
-        Math.ceil(
-            (
-                cementVolume *
-                cementDensity
-            ) /
-            cementBagWeight
-        );
-
-}
-
-
-/* PLASTERING */
-
-else if (selectedProject === "lowStrengthConcrete") {
-
-    const wallLength = value1;
-    const wallHeight = value2;
-    const plasterThickness = value3;
-
-    wetVolume =
-        wallLength *
-        wallHeight *
-        plasterThickness;
-
-    dryVolume =
-        wetVolume *
-        dryVolumeFactor;
-
-    const totalRatio =
-        cementRatio +
-        sandRatio +
-        aggregateRatio;
-
-    const cementVolume =
-        dryVolume *
-        (cementRatio / totalRatio);
-
-    sandVolume =
-        dryVolume *
-        (sandRatio / totalRatio);
-
-    cementBags =
-        Math.ceil(
-            (
-                cementVolume *
-                cementDensity
-            ) /
-            cementBagWeight
-        );
-
-}
-
-
-/* BLOCK MANUFACTURING */
-
-else if (selectedProject === "blockManufacturing") {
-
-    const selectedBlockSize =
-        Number(
-            document.getElementById(
-                "manufacturingBlockSize"
-            ).value
-        );
-
-    let materialVolumePerBlock = 0.012;
-
-    if (selectedBlockSize === 4) {
-        materialVolumePerBlock = 0.010;
-    }
-
-    if (selectedBlockSize === 5) {
-        materialVolumePerBlock = 0.011;
-    }
-
-    if (selectedBlockSize === 6) {
-        materialVolumePerBlock = 0.012;
-    }
-
-    wetVolume =
-        numberOfBlocks *
-        materialVolumePerBlock;
-
-    dryVolume =
-        wetVolume *
-        dryVolumeFactor;
-
-    const totalRatio =
-        cementRatio +
-        sandRatio +
-        aggregateRatio;
-
-    const cementVolume =
-        dryVolume *
-        (cementRatio / totalRatio);
-
-    sandVolume =
-        dryVolume *
-        (sandRatio / totalRatio);
-
-    cementBags =
-        Math.ceil(
-            (
-                cementVolume *
-                cementDensity
-            ) /
-            cementBagWeight
-        );
-
-    estimatedBlocks = numberOfBlocks;
-
-}
+estimatedBlocks = 0; // Block estimation is removed
 
 
 /* ======================================
    DISPLAY RESULTS ON THE PAGE
 ====================================== */
 
+/* Convert volumes to wheelbarrows for easier measurement */
+const wheelbarrowCapacityM3 = 0.07; // Approx. 2.5 cubic feet
+
+const sandWheelbarrows = Math.ceil(sandVolume / wheelbarrowCapacityM3);
+const aggregateWheelbarrows = Math.ceil(aggregateVolume / wheelbarrowCapacityM3);
+const cementWheelbarrows = Math.ceil((cementBags * (cementBagWeight / cementDensity)) / wheelbarrowCapacityM3);
+
+
 document.getElementById("cementResult").textContent =
-    cementBags + " bags";
+    cementWheelbarrows + " wheelbarrow(s)";
 
 document.getElementById("sandResult").textContent =
-    sandVolume.toFixed(2) + " m³";
+    sandWheelbarrows + " wheelbarrow(s)";
 
 document.getElementById("aggregateResult").textContent =
-    aggregateVolume.toFixed(2) + " m³";
+    aggregateWheelbarrows + " wheelbarrow(s)";
 
 document.getElementById("blocksResult").textContent =
     estimatedBlocks;
@@ -1371,16 +901,9 @@ document.getElementById("mainMeasurementLabel").textContent =
 let measurementUnit = "";
 
 if (projectType === "concrete") {
-    measurementUnit = " m³";
-} else if (
-    selectedProject === "standardStrengthConcrete" ||
-    selectedProject === "lowStrengthConcrete"
-) {
-    measurementUnit = " m²";
+    measurementUnit = " bags";
 }
-
-document.getElementById("volumeResult").textContent =
-    mainMeasurement.toFixed(2) + measurementUnit;
+document.getElementById("volumeResult").textContent = mainMeasurement + measurementUnit;
 
 document.getElementById("mixResult").textContent =
     mixRatioText;
@@ -1415,7 +938,7 @@ if (estimatedBlocks > 0) {
 projectDetails.style.display = "none";
 resultsSection.style.display = "block";
 
-activateEstimatorStep(4);
+activateEstimatorStep(3);
 
 resultsSection.scrollIntoView({
     behavior: "smooth",
@@ -1522,7 +1045,7 @@ if (recalculateButton) {
         resultsSection.style.display = "none";
         projectDetails.style.display = "block";
 
-        activateEstimatorStep(3);
+        activateEstimatorStep(2);
 
         projectDetails.scrollIntoView({
             behavior: "smooth",

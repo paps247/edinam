@@ -287,12 +287,7 @@ Recommended Applications
 
             <div class="step">
                 <span>3</span>
-                <p>Select Ratio</p>
-            </div>
-
-            <div class="step">
-                <span>4</span>
-                <p>View Results</p>
+                <p>View Results</p> 
             </div>
 
         </div>
@@ -372,148 +367,24 @@ Recommended Applications
             </div>
 
 
-            <!-- STANDARD DIMENSIONS -->
-
-            <div class="dimension-grid" id="dimensionFields">
-
-                <div>
-
-                    <label id="dimensionOneLabel" for="dimensionOne">
-                        Length (m)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="dimensionOne"
-                        min="0"
-                        step="0.01"
-                        placeholder="Example: 10"
-                    >
-
-                </div>
-
-                <div>
-
-                    <label id="dimensionTwoLabel" for="dimensionTwo">
-                        Width (m)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="dimensionTwo"
-                        min="0"
-                        step="0.01"
-                        placeholder="Example: 0.6"
-                    >
-
-                </div>
-
-                <div>
-
-                    <label id="dimensionThreeLabel" for="dimensionThree">
-                        Depth (m)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="dimensionThree"
-                        min="0"
-                        step="0.01"
-                        placeholder="Example: 0.25"
-                    >
-
-                </div>
-
-            </div>
-
-
-            <!-- BLOCK MANUFACTURING FIELDS -->
-
+            <!-- BATCH INPUT FIELDS -->
             <div
-                class="block-manufacturing-fields"
-                id="blockManufacturingFields"
-                style="display:none;"
+                class="dimension-grid"
+                id="batchFields"
             >
-
                 <div>
-
-                    <label for="numberOfBlocks">
-                        Number of Blocks Required
+                    <label for="numberOfBatches">
+                        Number of Batches (Bags of Cement)
                     </label>
-
                     <input
                         type="number"
-                        id="numberOfBlocks"
+                        id="numberOfBatches"
                         min="1"
                         step="1"
-                        placeholder="Example: 500"
+                        placeholder="e.g., 10 bags"
                     >
-
                 </div>
-
-                <div>
-
-                    <label for="manufacturingBlockSize">
-                        Block Size
-                    </label>
-
-                    <select id="manufacturingBlockSize">
-
-                        <option value="4">4-inch block</option>
-                        <option value="5">5-inch block</option>
-                        <option value="6">6-inch block</option>
-
-                    </select>
-
-                </div>
-
             </div>
-
-
-            <!-- BLOCK LAYING SIZE -->
-
-            <div
-                class="block-size-field"
-                id="blockSizeField"
-                style="display:none;"
-            >
-
-                <label for="blockSize">
-                    Block Size
-                </label>
-
-                <select id="blockSize">
-
-                    <option value="4">4-inch block</option>
-                    <option value="5">5-inch block</option>
-                    <option value="6">6-inch block</option>
-
-                </select>
-
-            </div>
-
-
-            <!-- MIX RATIO OPTION -->
-
-            <label for="mixMethod">
-                Mix Ratio Option
-            </label>
-
-            <select id="mixMethod">
-
-                <option value="recommended">
-                    Use Recommended Ratio
-                </option>
-
-                <option value="standard">
-                    Choose Another Standard Ratio
-                </option>
-
-                <option value="custom">
-                    Enter Custom Ratio
-                </option>
-
-            </select>
 
 
             <!-- RECOMMENDED RATIO -->
@@ -534,103 +405,10 @@ Recommended Applications
 
             </div>
 
-
-            <!-- STANDARD RATIO -->
-
-            <div
-                id="standardMixBox"
-                style="display:none;"
-            >
-
-                <label for="standardMix">
-                    Select Standard Ratio
-                </label>
-
-                <select id="standardMix">
-
-                    <option value="1:1.5:3">1 : 1.5 : 3</option>
-                    <option value="1:2:4">1 : 2 : 4</option>
-                    <option value="1:3:6">1 : 3 : 6</option>
-                    <option value="1:4:8">1 : 4 : 8</option>
-                    <option value="1:4">1 : 4</option>
-                    <option value="1:5">1 : 5</option>
-                    <option value="1:6">1 : 6</option>
-
-                </select>
-
-            </div>
-
-
-            <!-- CUSTOM RATIO -->
-
-            <div
-                id="customMix"
-                style="display:none;"
-            >
-
-                <h3>Enter Your Desired Ratio</h3>
-
-                <div class="ratio-grid">
-
-                    <div>
-
-                        <label for="cementRatio">
-                            Cement
-                        </label>
-
-                        <input
-                            type="number"
-                            id="cementRatio"
-                            min="0.1"
-                            step="0.1"
-                            value="1"
-                        >
-
-                    </div>
-
-                    <div>
-
-                        <label for="sandRatio">
-                            Sand
-                        </label>
-
-                        <input
-                            type="number"
-                            id="sandRatio"
-                            min="0.1"
-                            step="0.1"
-                            value="2"
-                        >
-
-                    </div>
-
-                    <div id="aggregateRatioBox">
-
-                        <label for="aggregateRatio">
-                            Aggregate
-                        </label>
-
-                        <input
-                            type="number"
-                            id="aggregateRatio"
-                            min="0.1"
-                            step="0.1"
-                            value="4"
-                        >
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
             <!-- CALCULATE BUTTON -->
-
             <button
                 type="button"
                 id="smartCalculateButton"
-                
             >
                 Calculate Materials
             </button>
