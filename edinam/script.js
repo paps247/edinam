@@ -674,6 +674,29 @@ function clearEstimatorInputs() {
 }
 
 
+/* UNIT SELECTOR LOGIC */
+
+const unitButtons = document.querySelectorAll(".unit-button");
+let selectedUnit = "wheelbarrow"; // Default unit
+
+if (unitButtons) {
+    unitButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            // Remove active class from all buttons
+            unitButtons.forEach(btn => btn.classList.remove("active"));
+
+            // Add active class to the clicked button
+            this.classList.add("active");
+
+            // Update the selected unit
+            selectedUnit = this.dataset.unit;
+            console.log("Selected unit:", selectedUnit);
+        });
+    });
+
+}
+
+
 /* DISPLAY SELECTED PROJECT */
 
 function showSelectedProject(projectName) {
@@ -849,20 +872,25 @@ let estimatedBlocks = 0;
 const cementDensity = 1440;
 const cementBagWeight = 50;
 
-// All projects are now calculated based on the number of batches (bags of cement)
+// The number of batches is the number of cement bags.
 cementBags = mainMeasurement;
 
-// Calculate the volume of cement from the number of bags
-const cementVolume = (cementBags * cementBagWeight) / cementDensity;
+// Determine the volumetric equivalent of cement based on the selected unit.
+let cementVolumeInUnit = 0;
+if (selectedUnit === "wheelbarrow") {
+    // 2 bags = 1 wheelbarrow
+    cementVolumeInUnit = cementBags / 2;
+} else { // headpan
+    // 1 bag = 2 headpans
+    cementVolumeInUnit = cementBags * 2;
+}
 
-// The ratio parts are volumetric.
-// materialVolume = cementVolume * (materialRatio / cementRatio)
-sandVolume = cementVolume * (sandRatio / cementRatio);
+// Calculate sand and aggregate based on the volumetric ratio.
+const sandInUnit = cementVolumeInUnit * (sandRatio / cementRatio);
+let aggregateInUnit = 0;
 
 if (aggregateRatio > 0) {
-    aggregateVolume = cementVolume * (aggregateRatio / cementRatio);
-} else {
-    aggregateVolume = 0;
+    aggregateInUnit = cementVolumeInUnit * (aggregateRatio / cementRatio);
 }
 
 estimatedBlocks = 0; // Block estimation is removed
@@ -872,22 +900,18 @@ estimatedBlocks = 0; // Block estimation is removed
    DISPLAY RESULTS ON THE PAGE
 ====================================== */
 
-/* Convert volumes to wheelbarrows for easier measurement */
-const wheelbarrowCapacityM3 = 0.07; // Approx. 2.5 cubic feet
+const cementResult = document.getElementById("cementResult");
+const cementEquivalentResult = document.getElementById("cementEquivalentResult");
 
-const sandWheelbarrows = Math.ceil(sandVolume / wheelbarrowCapacityM3);
-const aggregateWheelbarrows = Math.ceil(aggregateVolume / wheelbarrowCapacityM3);
-const cementWheelbarrows = Math.ceil((cementBags * (cementBagWeight / cementDensity)) / wheelbarrowCapacityM3);
-
-
-document.getElementById("cementResult").textContent =
-    cementWheelbarrows + " wheelbarrow(s)";
+cementResult.textContent = cementBags + " bags";
+cementEquivalentResult.textContent = `(Equivalent to ${Math.round(cementVolumeInUnit)} ${selectedUnit}s)`;
 
 document.getElementById("sandResult").textContent =
-    sandWheelbarrows + " wheelbarrow(s)";
+    Math.ceil(sandInUnit) + ` ${selectedUnit}(s)`;
 
 document.getElementById("aggregateResult").textContent =
-    aggregateWheelbarrows + " wheelbarrow(s)";
+    Math.ceil(aggregateInUnit) + ` ${selectedUnit}(s)`;
+
 
 document.getElementById("blocksResult").textContent =
     estimatedBlocks;
@@ -914,7 +938,7 @@ document.getElementById("mixResult").textContent =
 const aggregateResultCard =
     document.getElementById("aggregateResultCard");
 
-if (aggregateVolume > 0) {
+if (aggregateInUnit > 0) {
     aggregateResultCard.style.display = "block";
 } else {
     aggregateResultCard.style.display = "none";
@@ -979,10 +1003,8 @@ if (explanationButton) {
             calculationExplanation.style.display = "block";
 
             calculationExplanationText.textContent =
-                "The estimate was calculated using the project measurements, " +
-                "the selected mix ratio and a dry-volume factor of 1.54. " +
-                "Cement was converted into 50 kg bags, while sand and aggregate " +
-                "were estimated in cubic metres.";
+                "Material quantities are calculated using the recommended volumetric mix proportions in the Ghacem Product Handbook, " +
+                "based on the following conversions: 2 cement bags = 1 wheelbarrow and 1 cement bag = 2 headpans";
 
             explanationButton.textContent =
                 "Hide calculation details";
